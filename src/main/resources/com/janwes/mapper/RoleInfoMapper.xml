@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding= "UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.janwes.mapper.RoleInfoMapper">
+    <resultMap id="RoleInfoMap" type="com.janwes.pojo.RoleInfo">
+        <id column="role_id" property="roleId"/>
+        <result column="role_code" property="roleCode"/>
+        <result column="role_name" property="roleName"/>
+        <collection property="permissionList" column="role_Id" javaType="list" select="com.janwes.mapper.PermissionInfoMapper.selectAll" ofType="com.janwes.pojo.PermissionInfo">
+            <id column="permission_id" property="permissionId"/>
+            <result column="permission_code" property="permissionCode"/>
+            <result column="permission_name" property="permissionName"/>
+        </collection>
+    </resultMap>
+    <select id="selectRoles" parameterType="int" resultMap="RoleInfoMap">
+        SELECT
+            role.role_id,
+	        role.role_code,
+	        role.role_name
+	    FROM
+	        role_info role,user_role_mapping ur
+	    WHERE
+	        role.role_id=ur.role_id and ur.user_id=#{userId};
+    </select>
+
+    <!--<select id="selectRoles" parameterType="int" resultType="com.janwes.pojo.RoleInfo">
+        SELECT
+            role.role_id roleId,
+	        role.role_code roleCode,
+	        role.role_name roleName
+	    FROM
+	        role_info role,user_role_mapping ur
+	    WHERE
+	        role.role_id=ur.role_id and ur.user_id=#{userId};
+    </select>-->
+</mapper>

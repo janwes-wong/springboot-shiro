@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding= "UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.janwes.mapper.UserInfoMapper">
+    <!--方式一 映射-->
+    <resultMap id="UserInfoMap" type="com.janwes.pojo.UserInfo">
+        <id column="user_id" property="userId"/>
+        <result column="username" property="username"/>
+        <result column="blog_url" property="blogUrl"/>
+        <result column="state" property="state"/>
+        <result column="blog_remark" property="blogRemark"/>
+        <collection property="roleList" column="user_Id" javaType="list"
+                    select="com.janwes.mapper.RoleInfoMapper.selectRoles" ofType="com.janwes.pojo.RoleInfo"/>
+    </resultMap>
+
+    <!--方式二 映射-->
+    <resultMap id="UserInfoList" type="com.janwes.pojo.UserInfo">
+        <id column="user_id" property="userId"/>
+        <result column="username" property="username"/>
+        <result column="blog_url" property="blogUrl"/>
+        <result column="state" property="state"/>
+        <result column="blog_remark" property="blogRemark"/>
+        <collection property="roleList" javaType="list" ofType="com.janwes.pojo.RoleInfo">
+            <id column="role_id" property="roleId"/>
+            <result column="role_code" property="roleCode"/>
+            <result column="role_name" property="roleName"/>
+            <collection property="permissionList" javaType="list" ofType="com.janwes.pojo.PermissionInfo">
+                <id column="permission_id" property="permissionId"/>
+                <result column="permission_code" property="permissionCode"/>
+                <result column="permission_name" property="permissionName"/>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <!--分步嵌套查询-->
+    <select id="getUsers" parameterType="java.lang.String" resultMap="UserInfoMap">
+        select
+            user_id,username,blog_url,state,blog_remark
+        from
+            user_info
+        where
+            username=#{username}
+    </select>
+
+    <!--整体嵌套查询 内连接-->
+    <select id="getUserList" parameterType="java.lang.String" resultMap="UserInfoList">
+        SELECT
+	        user.user_id,
+	        user.username,
+	        role.role_id,
+	        role.role_code,
+	        role.role_name,
+	        permission.permission_id,
+	        permission.permission_code,
+	        permission.permission_name
+        FROM
+	        user_info
+	        user JOIN user_role_mapping ur ON user.user_id = ur.user_id
+	        JOIN role_info role ON ur.role_id = role.role_id
+	        JOIN role_permission_mapping rp ON role.role_id = rp.role_id
+	        JOIN permission_info permission ON rp.permission_id = permission.permission_id
+        WHERE
+	        user.username=#{username};
+    </select>
+
+    <!--<select id="getUserList" parameterType="java.lang.String" resultMap="UserInfoList">
+        SELECT
+	        user.user_id userId,
+	        user.username username,
+	        role.role_id roleId,
+	        role.role_code roleCode,
+	        role.role_name roleName,
+	        permission.permission_id permissionId,
+	        permission.permission_code permissionCode,
+	        permission.permission_name permissionName
+        FROM
+	        `user_info` user,
+	        user_role_mapping ur,
+	        role_info role,
+	        role_permission_mapping rp,
+	        permission_info permission
+        WHERE
+	        username=#{username}
+	        AND user.user_id=ur.user_id
+	        AND role.role_id=ur.role_id
+	        AND rp.role_id=role.role_id
+	        AND rp.permission_id=permission.permission_id;
+    </select>-->
+</mapper>

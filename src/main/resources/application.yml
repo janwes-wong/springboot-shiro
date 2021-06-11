@@ -1,0 +1,28 @@
+server:
+  port: 8888
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/admin_shiro?useUnicode=true&characterEncoding=utf-8&useSSL=true
+    username: root
+    password: root
+# mybatis-plus配置
+mybatis-plus:
+  # 设置Mapper接口所对应的XML文件位置，如果你在Mapper接口中有自定义方法，需要进行该配置
+  mapper-locations: classpath*:mapper/*.xml
+  # 设置别名包扫描路径，通过该属性可以给包中的类注册别名
+  type-aliases-package: com.janwes.pojo
+  configuration:
+    # 开启驼峰命名功能
+    map-underscore-to-camel-case: true
+    # 配置控制台打印带参数sql执行语句
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      # id自增
+      id-type: auto
+# shiro配置
+shiro:
+  # shiro默认的登录页是/login.jsp
+  loginUrl: /login
+  successUrl: /
